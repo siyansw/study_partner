@@ -24,15 +24,18 @@ Knowledge Point: {kp_text}
 
 # NOTE: Prompt for grading answers
 GRADE_PROMPT = """
-You are a test grader. Based on the standard answer, strictly judge if the student's answer is correct.
+You are a test grader. Based on the standard answer and original source material, strictly judge if the student's answer is correct.
 Your output must be JSON and contain only the following keys:
 - "is_correct": true or false
 - "correct_answer": The correct answer
-- "explanation": A brief explanation
+- "explanation": A detailed explanation that references the original source material
 
 Question Stem: {stem}
 Standard Answer: {answer}
 Student Answer: {user_answer}
+
+Original Source Material:
+{source_content}
 """
 
 def generate_quiz(conn: sqlite3.Connection, kp_id: int, n: int = 5):
@@ -52,7 +55,22 @@ def generate_quiz(conn: sqlite3.Connection, kp_id: int, n: int = 5):
     
     try:
         response_text = ask_gemini_cli(prompt)
-        questions = json.loads(response_text)
+        
+        # Extract JSON from markdown code blocks if present
+        if response_text.strip().startswith('```json'):
+            # Find the JSON content between ```json and ```
+            start = response_text.find('```json') + 7
+            end = response_text.find('```', start)
+            json_content = response_text[start:end].strip()
+        elif response_text.strip().startswith('```'):
+            # Handle generic code blocks
+            start = response_text.find('```') + 3
+            end = response_text.find('```', start)
+            json_content = response_text[start:end].strip()
+        else:
+            json_content = response_text.strip()
+        
+        questions = json.loads(json_content)
     except json.JSONDecodeError as e:
         print(f"[bold red]Error:[/bold red] Failed to parse JSON from Gemini. {e}")
         print(f"Gemini raw output: {response_text}")
@@ -96,20 +114,49 @@ def grade_and_log(conn: sqlite3.Connection, question: dict, user_answer: str) ->
     explanation = "No explanation provided."
     correct_answer = question.get("answer", "N/A")
     
+    # Get the source content from the chunks table using source_chunk_id
+    cursor = conn.cursor()
+    source_content = "Source material not found."
+    if question.get("id"):
+        cursor.execute("SELECT source_chunk_id FROM questions WHERE id = ?", (question.get("id"),))
+        result = cursor.fetchone()
+        if result and result[0]:
+            cursor.execute("SELECT content FROM chunks WHERE id = ?", (result[0],))
+            chunk_result = cursor.fetchone()
+            if chunk_result:
+                source_content = chunk_result[0]
+    
     prompt = GRADE_PROMPT.format(
         stem=question.get("stem"), 
         answer=question.get("answer"), 
-        user_answer=user_answer
+        user_answer=user_answer,
+        source_content=source_content
     )
     
     try:
         response = ask_gemini_cli(prompt)
-        grading_result = json.loads(response)
+        
+        # Extract JSON from markdown code blocks if present
+        if response.strip().startswith('```json'):
+            # Find the JSON content between ```json and ```
+            start = response.find('```json') + 7
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        elif response.strip().startswith('```'):
+            # Handle generic code blocks
+            start = response.find('```') + 3
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        else:
+            json_content = response.strip()
+        
+        grading_result = json.loads(json_content)
         is_correct = grading_result.get("is_correct", False)
         explanation = grading_result.get("explanation", explanation)
         correct_answer = grading_result.get("correct_answer", correct_answer)
     except Exception as e:
         print(f"[bold red]Error:[/bold red] Failed to grade with Gemini: {e}. Defaulting to simple comparison.")
+        print(f"Debug - Raw response: {response[:200]}...")
         if user_answer.strip().lower() == correct_answer.strip().lower():
             is_correct = True
 
@@ -140,7 +187,6 @@ def grade_and_log(conn: sqlite3.Connection, question: dict, user_answer: str) ->
             )
 
         print(f"\n[bold red]Incorrect! The answer is: {correct_answer}[/]")
-        print(f"[bold red]Explanation:[/][dim] {explanation}[/]")
     else:
         print("[bold green]✅ Correct![/]")
 

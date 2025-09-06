@@ -31,15 +31,9 @@ def generate_report(conn: sqlite3.Connection):
             q.stem,
             m.wrong_answer,
             m.correct_answer,
-            kp.kp,
-            d.path,
-            c.page_from,
-            c.page_to
+            m.first_seen_at
         FROM mistakes m
         JOIN questions q ON q.id = m.question_id
-        JOIN knowledge_points kp ON kp.id = m.kp_id
-        JOIN chunks c ON c.id = kp.source_chunk_id
-        JOIN documents d ON d.id = c.document_id
         ORDER BY m.first_seen_at DESC
     """)
     mistakes = cursor.fetchall()
@@ -49,13 +43,12 @@ def generate_report(conn: sqlite3.Connection):
 
     mistake_list = ""
     for i, row in enumerate(mistakes, 1):
-        stem, wrong_ans, correct_ans, kp, path, page_from, page_to = row
+        stem, wrong_ans, correct_ans, first_seen = row
         mistake_list += (
             f"### {i}. Question: {stem}\n"
             f"- Your Answer: {wrong_ans}\n"
             f"- Correct Answer: {correct_ans}\n"
-            f"- Knowledge Point: {kp}\n"
-            f"- Source: {os.path.basename(path)} (p.{page_from}-{page_to})\n\n"
+            f"- Date: {first_seen}\n\n"
         )
     
     report_content = REPORT_TEMPLATE.format(

@@ -26,7 +26,21 @@ def extract_knowledge_points(text_content, limit=5):
     response = ask_gemini_cli(prompt_with_content)
     
     try:
-        knowledge_points = json.loads(response)
+        # Extract JSON from markdown code blocks if present
+        if response.strip().startswith('```json'):
+            # Find the JSON content between ```json and ```
+            start = response.find('```json') + 7
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        elif response.strip().startswith('```'):
+            # Handle generic code blocks
+            start = response.find('```') + 3
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        else:
+            json_content = response.strip()
+        
+        knowledge_points = json.loads(json_content)
         if isinstance(knowledge_points, list):
             return knowledge_points
         else:
