@@ -56,26 +56,42 @@ Add .env to .gitignore.
 Use .env.example for sharing.
 
 ## Usage
-Run the app end-to-end:
+Import your study materials:
 ```bash
 python app.py import [file_path]
+```
+Turn them into knowledge points:
+```bash
 python app.py summarize
+```
+
+(Optional) If you want to see what knowledge points are summarized:
+```bash
+sqlite3 study.db
+select * from knowledge_points;
+```
+Generate quiz questions:
+```bash
 python app.py quiz (optional: --kp-id [knowledge point id] --num [the number of questions you want Gemini to generate] )
+```
+Review your previous mistakes and identify the original source files where these topics are covered：
+```bash
 python app.py report
 ```
 
 ## (Add-on) MCP
-Add procrastinator to your MCP server
+Add procrastinator to your MCP server：
 ```bash
 gemini mcp add procrastinator "mcp_server.py"
 ```
 
 ## Workflow Example
-1. Place your lecture notes or text files into test_data/.
-2. Run summarization (llm.py) → Gemini condenses your notes.
-3. Generate quizzes (quizzer.py) → practice questions are created.
-4. View reports in reports/ → progress and insights are saved locally.
-5. (Optional) Add our app to your MCP server.
+1. Place your lecture notes or text files into test_data/
+2. Import files (parser.py) → parse and chunk long files for further review.
+3. Run summarization (kp_extractor.py) → Gemini condenses your notes into structured knowledge points.
+4. Generate quizzes (quizzer.py) → Gemini generates practice questions and grades your quiz answers.
+5. View reports in reports (report.py) → progress and insights are saved locally.
+6. (Optional) Add our app to your MCP server.
 
 ## 📂 Project Structure
 ```markdown
@@ -84,7 +100,7 @@ study_partner/
 │── db.py # Database setup
 │── db_checker.py # DB verification helpers
 │── kp_extractor.py # Extracts key points from study materials
-│── llm.py # Summarization with Gemini
+│── llm.py # function hub
 │── mcp_server.py # MCP modules Intergration
 │── parser.py # User subject definitions
 │── quizzer.py # Generates quizzes from extracted notes
