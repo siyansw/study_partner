@@ -23,6 +23,12 @@ def import_path(conn, path, subject=None):
     """Parses files from a given path and imports them into the database."""
     n_docs = 0
     n_chunks = 0
+
+    if subject:
+        print(f"Importing documents with subject: {subject}")
+    else:
+        print("Importing documents (subject will be determined by AI)")
+        
     for root, _, files in os.walk(path):
         for f in files:
             p = os.path.join(root, f)

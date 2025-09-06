@@ -40,59 +40,73 @@ def summarize_command(
     path: str = typer.Argument(..., help="Path to the directory with your study files.")
 ):
     """Generates a summary of the documents in a local path."""
-    # Read all text from the specified directory
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, content FROM chunks")
+    
+    # Get chunks AND check if documents have user-provided subjects
+    cursor.execute("""
+        SELECT c.id, c.content, d.subject 
+        FROM chunks c 
+        JOIN documents d ON d.id = c.document_id
+    """)
     all_chunks = cursor.fetchall()
 
     if not all_chunks:
         print("[bold red]Error:[/] No text found in the database. Please run the 'import' command first.")
         return
 
-     # Create a single document string with unique chunk IDs
+    # Check if user provided subjects during import
+    user_subjects = set(row[2] for row in all_chunks if row[2] is not None)
+    has_user_subjects = len(user_subjects) > 0
+
+    # Create document string with chunk IDs
     doc_string = ""
-    for chunk_id, content in all_chunks:
+    for chunk_id, content, doc_subject in all_chunks:
         doc_string += f"[CHUNK_ID:{chunk_id}] {content}\n\n"
     
     print("[yellow]Extracting knowledge points from documents...[/]")
     
-    # NEW: The prompt now asks Gemini to return the corresponding CHUNK_ID
-    prompt_template = """
-    You are my study partner that helps me extract knowledge points from documents.
-    You will be provided with document chunks, each prefixed with a unique ID, like [CHUNK_ID:123].
+    # Adapt prompt based on whether user provided subjects
+    if has_user_subjects:
+        prompt_template = """
+        You are extracting knowledge points from documents that users have categorized into subjects: {subjects}
+        
+        For each knowledge point, use the appropriate subject from the user's categories: {subjects}
+        Only use these subjects - do not create new ones.
+        
+        Extract 3-10 knowledge points. Return valid JSON array with:
+        - "subject": One of these user-provided subjects: {subjects}
+        - "topic": Specific subtopic within that subject
+        - "kp": Knowledge point statement
+        - "chunk_id": The ID from [CHUNK_ID:X] markers
+        
+        Documents:
+        ---
+        {docs}
+        ---
+        """
+        prompt = prompt_template.format(
+            subjects=list(user_subjects), 
+            docs=doc_string
+        )
+    else:
+        prompt_template = """
+        You are extracting knowledge points from documents. Since no subject categories were provided, analyze the content and determine appropriate subjects.
+        
+        Extract 3-10 knowledge points. Return valid JSON array with:
+        - "subject": Your best guess at the main subject (e.g., "Physics", "Computer Science", "Biology")
+        - "topic": Specific subtopic within that subject
+        - "kp": Knowledge point statement  
+        - "chunk_id": The ID from [CHUNK_ID:X] markers
+        
+        Documents:
+        ---
+        {docs}
+        ---
+        """
+        prompt = prompt_template.format(docs=doc_string)
     
-    Your task is to extract 3-10 knowledge points from the provided text.
-    For each knowledge point, you must include the ID of the chunk it came from.
-    Focus only on factual, standalone knowledge points — avoid opinions, examples, or unrelated content.
-    
-    Return your response strictly as a valid JSON array. 
-    Each object in the array must have the following keys:
-    - subject: The main subject of the lecture.
-    - topic: The sub-topic related to the knowledge point.
-    - kp: The knowledge point statement.
-    - chunk_id: The ID of the chunk where this knowledge point was found.
-    
-    Example response:
-    [
-        {{
-            "subject": "Physics",
-            "topic": 'Thermology'
-            "kp": "The law of conservation of energy states that energy cannot be created or destroyed.",
-            "chunk_id": 45
-        }}
-    ]
-    
-    Documents:
-    ---
-    {docs}
-    ---
-    """
-    
-    # Format the prompt with the document string
-    prompt = prompt_template.format(docs=doc_string)
-    
-    # Call the mock Gemini CLI and parse the JSON output
+    # Rest of your existing code...
     response = ask_gemini_cli(prompt)
  
     try:
