@@ -4,6 +4,7 @@ import json
 from rich import print
 import json
 import sqlite3
+from dotenv import load_dotenv
 
 # Local imports
 from db import get_db
@@ -12,6 +13,8 @@ from llm import ask_gemini_cli
 from quizzer import generate_quiz, grade_and_log
 from kp_extractor import extract_knowledge_points, save_knowledge_points
 from report import generate_report
+
+load_dotenv()
 
 app = typer.Typer(help="Study Partner CLI")
 
@@ -108,7 +111,21 @@ def summarize_command():
     response = ask_gemini_cli(prompt)
  
     try:
-        kp_list = json.loads(response)
+        # Extract JSON from markdown code blocks if present
+        if response.strip().startswith('```json'):
+            # Find the JSON content between ```json and ```
+            start = response.find('```json') + 7
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        elif response.strip().startswith('```'):
+            # Handle generic code blocks
+            start = response.find('```') + 3
+            end = response.find('```', start)
+            json_content = response[start:end].strip()
+        else:
+            json_content = response.strip()
+        
+        kp_list = json.loads(json_content)
         if kp_list:
             for kp_item in kp_list:
                 # NEW: Save the chunk_id from the JSON response
@@ -121,7 +138,7 @@ def summarize_command():
         else:
             print("[bold red]Error:[/] No knowledge points were extracted.")
     except json.JSONDecodeError:
-        print("[bold red]Error:[/] Failed to parse JSON from Gemini. Check the model's output.")
+        print(f"[bold red]Error:[/] Failed to parse JSON from Gemini. Raw output: {response[:500]}...")
 
 # NOTE: Command to generate and run a quiz
 @app.command(name="quiz")

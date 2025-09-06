@@ -100,19 +100,14 @@ def ask_gemini_cli(prompt: str, system_instruction: str = "") -> str:
 def _call_gemini_with_api_key(prompt: str, system_instruction: str, api_key: str) -> str:
     """Call Gemini CLI with API key"""
     try:
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
-            full_prompt = f"System: {system_instruction}\n\nUser: {prompt}" if system_instruction else prompt
-            f.write(full_prompt)
-            prompt_file = f.name
+        full_prompt = f"System: {system_instruction}\n\nUser: {prompt}" if system_instruction else prompt
         
         env = os.environ.copy()
         env['GEMINI_API_KEY'] = api_key
         
         result = subprocess.run([
-            'gemini', 'chat', '--prompt-file', prompt_file
+            'gemini', '-p', full_prompt
         ], capture_output=True, text=True, timeout=60, env=env)
-        
-        os.unlink(prompt_file)
         
         if result.returncode != 0:
             raise RuntimeError(f"Gemini CLI failed: {result.stderr}")
