@@ -1,3 +1,4 @@
+
 # Study Partner  
 **Team: Procastinators**  
 AI Tinkerers – New York City Hackathon (Building with Gemini CLI)  
@@ -44,8 +45,10 @@ pip install -r requirements.txt
 
 ## Environment Variables
 Create a .env file in the root folder with:
-GEMINI_API_KEY=your_api_key_here
-
+```bash
+GEMINI_API_KEY=AIzaSyC-your-actual-api-key-here-dont-share-this 
+DB_PATH=study.db
+```
 
 ## Important:
 Do not commit your actual key.
@@ -54,7 +57,12 @@ Use .env.example for sharing.
 
 ## Usage
 Run the app end-to-end:
-python app.py
+```bash
+python app.py import [file_path]
+python app.py summarize
+python app.py quiz (optional: --kp-id [knowledge point id]) --num [the number of questions you want Gemini to generate]
+python app.py report
+```
 
 ## Workflow Example
 1. Place your lecture notes or text files into test_data/.
