@@ -70,7 +70,7 @@ study_partner/
 │── db_checker.py # DB verification helpers
 │── kp_extractor.py # Extracts key points from study materials
 │── llm.py # Summarization with Gemini
-│── mcp_server.py # Local server orchestration
+│── mcp_server.py # MCP modules Intergration
 │── parser.py # User subject definitions
 │── quizzer.py # Generates quizzes from extracted notes
 │── report.py # Creates progress reports
@@ -87,4 +87,4 @@ study_partner/
 1. llm.py: Summarization of notes via Gemini CLI.
 2. app.py: End-to-end pipeline orchestration using Gemini.
 3. quizzer.py + report.py: Chain Gemini outputs into actionable quizzes/reports.
-4. mcp: Local server savings for review of files
+4. mcp_server.py: Manages and integrates MCP modules, acting as a server to coordinate data flow between components.
