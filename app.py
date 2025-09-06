@@ -36,9 +36,7 @@ def import_command(
 
 # NOTE: Command to summarize and extract knowledge points
 @app.command(name="summarize")
-def summarize_command(
-    path: str = typer.Argument(..., help="Path to the directory with your study files.")
-):
+def summarize_command():
     """Generates a summary of the documents in a local path."""
     conn = get_db()
     cursor = conn.cursor()
