@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "study-partner": {
+      "command": "/Users/user/study_partner/run_mcp.sh",
+      "args": []
+    }
+  }
+}

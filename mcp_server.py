@@ -186,5 +186,6 @@ def get_chunk(chunk_id: int) -> Dict[str, Any]:
     return {"id": r[0], "content": r[1], "page_from": r[2], "page_to": r[3], "path": r[4]}
 
 if __name__ == "__main__":
+    import asyncio
     # Start stdio server (works well for local dev and Gemini CLI)
-    mcp.run_stdio()
+    asyncio.run(mcp.run(transport="stdio"))
