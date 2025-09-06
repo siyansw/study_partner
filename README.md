@@ -1,10 +1,10 @@
-# 📚 Study Partner  
+# Study Partner  
 **Team: Procastinators**  
 AI Tinkerers – New York City Hackathon (Building with Gemini CLI)  
 
 ---
 
-## 📝 Problem Statement  
+## Problem Statement  
 Right before exams, students often feel **overwhelmed by scattered notes, lecture slides, and textbooks**.  
 They waste precious time organizing instead of focusing on actual learning.  
 
@@ -12,7 +12,7 @@ Our **Study_partner** solves this by turning messy study material into **concise
 
 ---
 
-## 🚀 Features
+## Features
 - **Summarization**: Condense large lecture notes into concise takeaways.  
 - **Key Point Extraction**: Automatically highlight the most important details.  
 - **Quiz Generator**: Create practice quizzes directly from notes.  
@@ -22,69 +22,66 @@ Our **Study_partner** solves this by turning messy study material into **concise
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 ### 1. Clone repo
 ```bash
 git clone https://github.com/siyansw/study_partner.git
 cd study_partner
+```
 
-### 2. Create virtual environment
+## 2. Create virtual environment
+```bash
 python -m venv venv
 source venv/bin/activate     # macOS/Linux
 venv\Scripts\activate        # Windows
+```
 
-3. Install dependencies
+## 3. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-🔑 Environment Variables
-
+## Environment Variables
 Create a .env file in the root folder with:
-
 GEMINI_API_KEY=your_api_key_here
 
 
-⚠️ Important:
-
+## Important:
 Do not commit your actual key.
-
 Add .env to .gitignore.
-
 Use .env.example for sharing.
 
-▶️ Usage
+## Usage
 Run the app end-to-end:
 python app.py
 
-Workflow Example
+## Workflow Example
+1. Place your lecture notes or text files into test_data/.
+2. Run summarization (llm.py) → Gemini condenses your notes.
+3. Generate quizzes (quizzer.py) → practice questions are created.
+4. View reports in reports/ → progress and insights are saved locally.
 
-Place your lecture notes or text files into test_data/.
+## 📂 Project Structure
 
-Run summarization (llm.py) → Gemini condenses your notes.
-
-Generate quizzes (quizzer.py) → practice questions are created.
-
-View reports in reports/ → progress and insights are saved locally.
-
-📂 Project Structure
 study_partner/
-│── app.py             # Main entry point (Gemini + workflow integration)
-│── db.py              # Database setup
-│── db_checker.py      # DB verification helpers
-│── kp_extractor.py    # Extracts key points from study materials
-│── llm.py             # Summarization with Gemini
-│── mcp_server.py      # Local server orchestration
-│── parser.py          # User subject definitions
-│── quizzer.py         # Generates quizzes from extracted notes
-│── report.py          # Creates progress reports
-│── requirements.txt   # Dependencies
-│── README.md          # Documentation
+│── app.py # Main entry point (Gemini + workflow integration)
+│── db.py # Database setup
+│── db_checker.py # DB verification helpers
+│── kp_extractor.py # Extracts key points from study materials
+│── llm.py # Summarization with Gemini
+│── mcp_server.py # Local server orchestration
+│── parser.py # User subject definitions
+│── quizzer.py # Generates quizzes from extracted notes
+│── report.py # Creates progress reports
+│── requirements.txt # Dependencies
+│── README.md # Documentation
 │
-├── reports/           # Auto-generated reports
-├── test_data/         # Example input study files
-└── __pycache__/       # Compiled Python files
+├── reports/ # Auto-generated reports
+├── test_data/ # Example input study files
+└── pycache/ # Compiled Python files
 
-📊 Where Gemini is Used
+Where Gemini CLI is Used
 
 llm.py: Summarization of notes via Gemini CLI.
 
