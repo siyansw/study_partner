@@ -63,7 +63,7 @@ python app.py
 4. View reports in reports/ → progress and insights are saved locally.
 
 ## 📂 Project Structure
-
+```markdown
 study_partner/
 │── app.py # Main entry point (Gemini + workflow integration)
 │── db.py # Database setup
@@ -80,11 +80,10 @@ study_partner/
 ├── reports/ # Auto-generated reports
 ├── test_data/ # Example input study files
 └── pycache/ # Compiled Python files
+```
 
-Where Gemini CLI is Used
 
-llm.py: Summarization of notes via Gemini CLI.
-
-app.py: End-to-end pipeline orchestration using Gemini.
-
-quizzer.py + report.py: Chain Gemini outputs into actionable quizzes/reports.
+## Where Gemini CLI is Used
+1. llm.py: Summarization of notes via Gemini CLI.
+2. app.py: End-to-end pipeline orchestration using Gemini.
+3. quizzer.py + report.py: Chain Gemini outputs into actionable quizzes/reports.
