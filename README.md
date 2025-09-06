@@ -9,15 +9,15 @@ AI Tinkerers – New York City Hackathon (Building with Gemini CLI)
 Right before exams, students often feel **overwhelmed by scattered notes, lecture slides, and textbooks**.  
 They waste precious time organizing instead of focusing on actual learning.  
 
-Our **Study_partner** solves this by turning messy study material into **concise summaries, key points, quizzes, and progress reports**—all powered by **Gemini CLI** and a local-first workflow.  
+Our **Study_partner** solves this by turning messy study material into **structured knowledge points, quizzes, and progress reports**—all powered by **Gemini CLI** and a local-first workflow. Everything will be done in command lines. The only thing you need is an Gemini API.
 
 ---
 
 ## Features
-- **Summarization**: Condense large lecture notes into concise takeaways.  
-- **Key Point Extraction**: Automatically highlight the most important details.  
-- **Quiz Generator**: Create practice quizzes directly from notes.  
-- **Progress Reports**: AI-generated insights into what’s covered and what’s weak.  
+- **Import**: Chunk long files into chunks. 
+- **Summarization**: AI-generated knowledge points that highlight the most important details.  
+- **Quiz Generator**: AI-generated practice quizzes targeting included knowledge points.  
+- **Progress Reports**: AI-generated insights into what’s covered and what’s weak, also linking to the original slides.  
 - **Self-defined Subjects**: Users can define their own subject focus.  
 - **Local + Gemini**: Mixes local parsing with Gemini’s advanced summarization and reasoning.  
 
@@ -64,11 +64,18 @@ python app.py quiz (optional: --kp-id [knowledge point id] --num [the number of 
 python app.py report
 ```
 
+## (Add-on) MCP
+Add procrastinator to your MCP server
+```bash
+gemini mcp add procrastinator "mcp_server.py"
+```
+
 ## Workflow Example
 1. Place your lecture notes or text files into test_data/.
 2. Run summarization (llm.py) → Gemini condenses your notes.
 3. Generate quizzes (quizzer.py) → practice questions are created.
 4. View reports in reports/ → progress and insights are saved locally.
+5. (Optional) Add our app to your MCP server.
 
 ## 📂 Project Structure
 ```markdown
