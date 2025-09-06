@@ -60,7 +60,7 @@ Run the app end-to-end:
 ```bash
 python app.py import [file_path]
 python app.py summarize
-python app.py quiz (optional: --kp-id [knowledge point id]) --num [the number of questions you want Gemini to generate]
+python app.py quiz (optional: --kp-id [knowledge point id] --num [the number of questions you want Gemini to generate] )
 python app.py report
 ```
 
