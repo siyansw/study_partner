@@ -87,3 +87,4 @@ study_partner/
 1. llm.py: Summarization of notes via Gemini CLI.
 2. app.py: End-to-end pipeline orchestration using Gemini.
 3. quizzer.py + report.py: Chain Gemini outputs into actionable quizzes/reports.
+4. mcp: Local server savings for review of files
