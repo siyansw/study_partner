@@ -9,14 +9,24 @@
 ## Mistake Breakdown
 
 ### 1. Question: Which of the following best describes how the Bitcoin network tracks the ownership of coins?
-- Your Answer: C
-- Correct Answer: B
-- Date: 2025-09-06T13:30:48.363044
+- **Your Answer:** C
+- **Correct Answer:** B
+- **Date:** 2025-09-06T13:30:48.363044
+- **Source:** Lecture 6-NBAY 5710-01—SP24—UTXOs.pdf, page 1
+- **Source Content:** NBAY 5710:Cryptocurrencies and Blockchains
+Lecture 6: Bitcoin UTXOs and Scripts
+Smartcontract
+Instructor:  Ari JuelsSpring 2024
 
 ### 2. Question: Which of the following best describes the model Bitcoin uses to handle transactions and track coin ownership?
-- Your Answer: D
-- Correct Answer: C
-- Date: 2025-09-06T13:29:41.978071
+- **Your Answer:** D
+- **Correct Answer:** C
+- **Date:** 2025-09-06T13:29:41.978071
+- **Source:** Lecture 6-NBAY 5710-01—SP24—UTXOs.pdf, page 1
+- **Source Content:** NBAY 5710:Cryptocurrencies and Blockchains
+Lecture 6: Bitcoin UTXOs and Scripts
+Smartcontract
+Instructor:  Ari JuelsSpring 2024
 
 
 

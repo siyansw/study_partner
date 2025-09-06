@@ -31,9 +31,15 @@ def generate_report(conn: sqlite3.Connection):
             q.stem,
             m.wrong_answer,
             m.correct_answer,
-            m.first_seen_at
+            m.first_seen_at,
+            d.path,
+            c.page_from,
+            c.page_to,
+            c.content
         FROM mistakes m
         JOIN questions q ON q.id = m.question_id
+        LEFT JOIN chunks c ON c.id = q.source_chunk_id
+        LEFT JOIN documents d ON d.id = c.document_id
         ORDER BY m.first_seen_at DESC
     """)
     mistakes = cursor.fetchall()
@@ -43,13 +49,25 @@ def generate_report(conn: sqlite3.Connection):
 
     mistake_list = ""
     for i, row in enumerate(mistakes, 1):
-        stem, wrong_ans, correct_ans, first_seen = row
-        mistake_list += (
+        stem, wrong_ans, correct_ans, first_seen, path, page_from, page_to, content = row
+        
+        mistake_entry = (
             f"### {i}. Question: {stem}\n"
-            f"- Your Answer: {wrong_ans}\n"
-            f"- Correct Answer: {correct_ans}\n"
-            f"- Date: {first_seen}\n\n"
+            f"- **Your Answer:** {wrong_ans}\n"
+            f"- **Correct Answer:** {correct_ans}\n"
+            f"- **Date:** {first_seen}\n"
         )
+        
+        if path:
+            mistake_entry += f"- **Source:** {os.path.basename(path)}, page {page_from}\n"
+        
+        if content:
+            # Show first 200 characters of the source content for context
+            preview = content[:200] + "..." if len(content) > 200 else content
+            mistake_entry += f"- **Source Content:** {preview}\n"
+            
+        mistake_entry += "\n"
+        mistake_list += mistake_entry
     
     report_content = REPORT_TEMPLATE.format(
         date=datetime.date.today().isoformat(),
